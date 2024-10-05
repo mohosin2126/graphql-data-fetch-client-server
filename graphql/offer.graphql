@@ -1,0 +1,118 @@
+type Offer {
+    id: ID!
+    advertiser: User
+    name: String!
+    thumbnail: String
+    preview_link: String
+    tracking_link: String
+    model: OfferModel!
+    description: String
+    status: Status!
+    currency: Currency
+    revenue: Float!
+    payout: Float!
+    cr: Float
+    epc: Float
+    short_description: String
+    terms: String
+    notes: String
+    restrictions: String
+    conversion_flow: String
+    created_at: DateTime!
+    updated_at: DateTime!
+    events: [Event]
+    categories: [Category]
+    countries: [Country]
+    devices: [Device]
+    platforms: [Platform]
+    browsers: [Browser]
+}
+
+input OfferPayload {
+    advertiser_id: ID!
+    name: String!
+    thumbnail: String
+    preview_link: String
+    tracking_link: String!
+    model: OfferModel!
+    status: Status!
+    currency_id: ID!
+    revenue: Float!
+    payout: Float!
+    cr: Float
+    epc: Float
+    description: String
+    short_description: String
+    terms: String
+    notes: String
+    restrictions: String
+    conversion_flow: String
+    category: [ID]
+    countries: [ID]
+    devices: [ID]
+    platforms: [ID]
+    browsers: [ID]
+}
+
+input OfferUpdatePayload {
+    advertiser_id: ID
+    name: String
+    thumbnail: String
+    preview_link: String
+    tracking_link: String
+    model: OfferModel
+    status: Status
+    currency_id: ID
+    revenue: Float
+    payout: Float
+    cr: Float
+    epc: Float
+    description: String
+    short_description: String
+    terms: String
+    notes: String
+    restrictions: String
+    conversion_flow: String
+    category: [ID]
+    countries: [ID]
+    devices: [ID]
+    platforms: [ID]
+    browsers: [ID]
+}
+
+enum OfferModel {
+    cpi
+    cpa
+    cpl
+    cps
+    cpm
+    cpc
+    CPA
+    CPI
+    CPL
+    CPM
+    CPC
+}
+
+extend type Query {
+    offer(id: ID @eq): Offer @find
+    offers(
+        id: ID @eq
+        advertiser_id: ID @eq
+        name: String @like
+        model: OfferModel @eq
+        category: ID @eq
+        status: String @eq
+        cr: Float @eq
+        epc: Float @eq
+    ): [Offer!]! @paginate(defaultCount: 10) @orderBy(column: "id" direction: DESC)
+
+    //commonOffers: [Offer!]! @all @canAccess(roles: [admin]) @orderBy(column: "id" direction: DESC)
+   // commonPublisherOffers: [Offer!]! @all(scopes: [active]) @canAccess(roles: [publisher]) @orderBy(column: "id" direction: DESC)
+}
+
+extend type Mutation {
+    createOffer(input: OfferPayload! @spread): Offer @create
+    updateOffer(id: ID @eq, input: OfferUpdatePayload! @spread): Offer @update
+    deleteOffer(id: ID @eq): Offer @delete
+}
